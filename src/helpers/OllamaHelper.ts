@@ -1,5 +1,4 @@
-import {collection, getDocs, orderBy, query} from "firebase/firestore";
-import {newDb} from "@/firebase.ts";
+
 
 export async function generateTagsWithOllama(tags: string[], title:string, description:string) {
 
