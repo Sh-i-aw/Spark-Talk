@@ -115,37 +115,26 @@ async function testTagGeneration() {
   <div class="flex h-screen">
     <!-- Left Sidebar -->
     <div
-      class="w-1/4 bg-gray-500 p-6 fixed left-0 top-0 h-full flex flex-col gap-6"
+      class="w-1/4 p-6 fixed left-0 top-0 h-full flex flex-col gap-6"
     >
-      <h1 class="text-2xl font-bold text-white">Spark Talk</h1>
+      <div class="flex flex-col items-center">
+        <h1 class="text-3xl font-bold">Vehikl Lightning Talks ⚡</h1>
+        <div class="flex justify-evenly items-center">
+          <img src="./assets/lego-2.png" alt="" class="max-w-xs w-full h-auto"/>
+          <h2 class="text-xl">At tech talks, the Vehikl community comes together to discuss new technologies, encounters, and ideas that they came across the past month.</h2>
+        </div>
+      </div>
+
 
       <div class="flex flex-col gap-2">
-        <button
-          class="px-4 py-2 bg-blue-500 text-white rounded hover:bg-blue-600 transition"
-        >
-          Scroll Top
+        <button @click="clearFilter" class="px-4 py-2 bg-primaryOrange text-white rounded-xl hover:brightness-90 transition">
+          Submit A Talk
         </button>
-        <button
-          class="px-4 py-2 bg-blue-500 text-white rounded hover:bg-blue-600 transition"
-        >
-          Scroll Middle
+        <button @click="clearFilter" class="px-4 py-2 border border-primaryOrange text-primaryOrange rounded-xl hover:bg-secondaryOrange hover:bg-opacity-15 transition">
+          View Schedule
         </button>
-        <button
-          class="px-4 py-2 bg-blue-500 text-white rounded hover:bg-blue-600 transition"
-        >
-          Move Bottom
-        </button>
-        <button
-          @click="testTagGeneration"
-          class="px-4 py-2 bg-green-500 text-white rounded hover:bg-green-600 transition"
-        >
-          Test tagging with Llama
-        </button>
-        <button
-          @click="clearFilter"
-          class="px-4 py-2 bg-yellow-500 text-white rounded hover:bg-yellow-600 transition"
-        >
-          Clear Filter
+        <button @click="clearFilter" class="px-4 py-2 bg-primaryOrange text-white rounded-xl hover:brightness-90 transition">
+          Clear It, Clear It Real Good!
         </button>
       </div>
 
@@ -157,7 +146,7 @@ async function testTagGeneration() {
             v-for="tag in tags"
             :key="tag"
             @click="insertFilter(tag)"
-            class="px-3 py-1 bg-blue-500 text-white text-sm rounded-full hover:bg-blue-600"
+            class="px-3 py-1 bg-yellow-500 bg-opacity-60 text-white font-bold text-sm rounded-full hover:bg-primaryOrange"
           >
             {{ tag }}
           </span>
@@ -181,7 +170,7 @@ async function testTagGeneration() {
               <a
                   :href="getRecordingLink(section.year, section.monthName)"
                   target="_blank"
-                  class="hover-lift w-8 h-8 rounded-lg bg-red-400 flex items-center justify-center hover:bg-red-700"
+                  class="hover-lift w-8 h-8 rounded-xl bg-red-400 flex items-center justify-center hover:bg-red-700"
               >
                 <svg
                     xmlns="http://www.w3.org/2000/svg"
