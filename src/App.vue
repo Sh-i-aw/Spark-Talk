@@ -7,22 +7,29 @@ import {
   insertTagsForPastTalk,
   insertNewTagIfNeeded,
 } from "@/helpers/firestoreHelper.js";
+import TalkCard from "@/components/TalkCard.vue";
 
 const talks = ref(null);
 const tags = ref([]);
-const filter = ref ([]);
+const filter = ref([]);
 
 onMounted(async () => {
   talks.value = await getTalks();
   tags.value = await getTags();
 });
 
-function clearFilter () {
+function clearFilter() {
   filter.value = [];
 }
 
-function insertFilter (tag) {
-  filter.value.push(tag)
+function insertFilter(tag) {
+  filter.value.push(tag);
+}
+
+function getRecordingLink(year, month) {
+  // You can replace this with your actual link logic
+  const formattedMonth = month.toLowerCase(); // like 'feb'
+  return `https://example.com/recordings/${year}/${formattedMonth}`;
 }
 
 const filteredTalks = computed(() => {
@@ -32,9 +39,39 @@ const filteredTalks = computed(() => {
 
   return (talks.value || []).filter((talk) => {
     if (!talk.tags) return false;
-    return filter.value.some((tag) => talk.tags.includes(tag))
-  })
-})
+    return filter.value.some((tag) => talk.tags.includes(tag));
+  });
+});
+
+const groupedTalkSections = computed(() => {
+  if (!talks.value) return [];
+
+  const map = new Map();
+
+  for (const talk of talks.value) {
+    const date = new Date(talk.createdAt);
+    const year = date.getFullYear();
+    const monthIndex = date.getMonth(); // 0 = Jan
+    const monthName = date.toLocaleString("default", { month: "short" });
+
+    const key = `${year}-${monthIndex}`;
+    if (!map.has(key)) {
+      map.set(key, {
+        year,
+        monthIndex,
+        monthName,
+        talks: [],
+      });
+    }
+
+    map.get(key).talks.push(talk);
+  }
+
+  return Array.from(map.values()).sort((a, b) => {
+    if (a.year !== b.year) return b.year - a.year;
+    return b.monthIndex - a.monthIndex;
+  });
+});
 
 async function testTagGeneration() {
   await Promise.all(
@@ -71,20 +108,6 @@ async function testTagGeneration() {
       }
     })
   );
-  // const samples = talks.value.slice(0, 5);
-  // const promises = samples.map(talk => generateTagsWithOllama(tags.value, talk.title, talk.description));
-  // const results = await Promise.all(promises);
-  //
-  // results.forEach((tags, i) => {
-  //   const talk = samples[i];
-  //   console.log(`${talk.title} by ${talk.name}: ${talk.description}`);
-  //   console.log("Tags →", tags);
-  // });
-
-  // const sample = talks.value[0]
-
-  //
-  // console.log(`inserted tags ${resultTags} into ${sample.title} by ${sample.name}`);
 }
 </script>
 
@@ -119,8 +142,8 @@ async function testTagGeneration() {
           Test tagging with Llama
         </button>
         <button
-            @click="clearFilter"
-            class="px-4 py-2 bg-yellow-500 text-white rounded hover:bg-yellow-600 transition"
+          @click="clearFilter"
+          class="px-4 py-2 bg-yellow-500 text-white rounded hover:bg-yellow-600 transition"
         >
           Clear Filter
         </button>
@@ -142,31 +165,40 @@ async function testTagGeneration() {
       </div>
     </div>
 
-    <!-- Right Content Area -->
+    <!-- Talk Cards -->
     <div class="w-3/4 ml-[25%] p-6 overflow-y-auto">
       <div class="max-w-4xl mx-auto">
-        <div class="grid gap-4">
-          <div
-            v-for="talk in filteredTalks"
-            :key="talk.id"
-            class="talkCard bg-gray-700 p-6 rounded-lg shadow-lg"
-          >
-            <div class="flex flex-col gap-2">
-              <div class="flex justify-between text-sm text-gray-300">
-                <p>{{ new Date(talk.createdAt).toLocaleDateString() }}</p>
-                <p>{{ `${talk.talkLength} mins` }}</p>
-              </div>
-              <h3 class="text-xl font-semibold text-white">{{ talk.title }}</h3>
-              <p class="text-gray-300">{{ talk.name }}</p>
-              <div v-if="talk.tags" class="flex flex-wrap gap-2 mt-2">
-                <div
-                  v-for="tag in talk.tags"
-                  :key="tag"
-                  class="px-3 py-1 bg-blue-500 text-white text-sm rounded-full hover:bg-blue-600 transition"
+        <div v-if="filter.length > 0" class="grid gap-4">
+          <TalkCard v-for="talk in filteredTalks" :key="talk.id" :talk="talk" />
+        </div>
+        <div v-else>
+          <div v-for="section in groupedTalkSections" :key="`${section.year}-${section.monthIndex}`">
+            <div :id="`anchor-${section.year}-${section.monthName}`" class="pt-20 -mt-20"></div>
+            <div class="flex items-start mt-12 mb-4">
+              <h2 class="text-2xl font-bold mr-4">
+                {{ `${section.year} ${section.monthName}` }}
+              </h2>
+              <a
+                  :href="getRecordingLink(section.year, section.monthName)"
+                  target="_blank"
+                  class="hover-lift w-8 h-8 rounded-lg bg-red-400 flex items-center justify-center hover:bg-red-700"
+              >
+                <svg
+                    xmlns="http://www.w3.org/2000/svg"
+                    class="w-4 h-4"
+                    viewBox="0 0 24 24"
+                    fill="white"
                 >
-                  {{ tag }}
-                </div>
-              </div>
+                  <path d="M8 5v14l11-7z" />
+                </svg>
+              </a>
+            </div>
+            <div class="grid gap-4">
+              <TalkCard
+                  v-for="talk in section.talks"
+                  :key="talk.id"
+                  :talk="talk"
+              />
             </div>
           </div>
         </div>
@@ -174,13 +206,3 @@ async function testTagGeneration() {
     </div>
   </div>
 </template>
-
-<style scoped>
-.talkCard {
-  transition: transform 0.2s ease-in-out;
-}
-
-.talkCard:hover {
-  transform: translateY(-2px);
-}
-</style>
