@@ -118,7 +118,7 @@ async function testTagGeneration() {
 <template>
   <div class="flex h-screen">
     <!-- Left Sidebar -->
-    <div class="w-1/4 p-6 fixed left-0 top-0 h-full flex flex-col gap-6">
+    <div class="w-1/4 p-8 fixed left-0 top-0 h-full flex flex-col gap-6">
       <div class="flex flex-col items-center">
         <h1 class="text-3xl font-bold">Vehikl Lightning Talks ⚡</h1>
         <div class="flex flex-wrap justify-evenly items-center">
@@ -173,8 +173,8 @@ async function testTagGeneration() {
     </div>
 
     <!-- Talk Cards -->
-    <div class="w-3/4 ml-[25%] p-6 overflow-y-auto">
-      <div class="max-w-4xl mx-auto">
+    <div class="w-3/4 ml-[25%] p-2 overflow-y-auto">
+      <div class="w-full px-12 pt-0 pr-24 mx-auto">
         <div v-if="filter.length > 0" class="grid gap-4">
           <TalkCard v-for="talk in filteredTalks" :key="talk.id" :talk="talk" />
         </div>
@@ -186,9 +186,9 @@ async function testTagGeneration() {
           >
             <div
               :id="`anchor-${section.year}-${section.monthName}`"
-              class="pt-20 -mt-20"
+              class="pt-10"
             >
-              <div class="flex items-start mt-12 mb-4">
+              <div class="flex items-start mb-4">
                 <h2 class="text-2xl font-bold mr-4">
                   {{ `${section.year} ${section.monthName}` }}
                 </h2>
