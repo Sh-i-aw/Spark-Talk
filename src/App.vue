@@ -8,6 +8,7 @@ import {
   insertNewTagIfNeeded,
 } from "@/helpers/firestoreHelper.js";
 import TalkCard from "@/components/TalkCard.vue";
+import TableOfContents from "@/components/TableOfContents.vue";
 
 const talks = ref(null);
 const tags = ref([]);
@@ -114,26 +115,40 @@ async function testTagGeneration() {
 <template>
   <div class="flex h-screen">
     <!-- Left Sidebar -->
-    <div
-      class="w-1/4 p-6 fixed left-0 top-0 h-full flex flex-col gap-6"
-    >
+    <div class="w-1/4 p-6 fixed left-0 top-0 h-full flex flex-col gap-6">
       <div class="flex flex-col items-center">
         <h1 class="text-3xl font-bold">Vehikl Lightning Talks ⚡</h1>
         <div class="flex justify-evenly items-center">
-          <img src="./assets/lego-2.png" alt="" class="max-w-xs w-full h-auto"/>
-          <h2 class="text-xl">At tech talks, the Vehikl community comes together to discuss new technologies, encounters, and ideas that they came across the past month.</h2>
+          <img
+            src="./assets/lego-2.png"
+            alt=""
+            class="max-w-xs w-full h-auto"
+          />
+          <h2 class="text-xl">
+            At tech talks, the Vehikl community comes together to discuss new
+            technologies, encounters, and ideas that they came across the past
+            month.
+          </h2>
         </div>
       </div>
 
-
       <div class="flex flex-col gap-2">
-        <button @click="clearFilter" class="px-4 py-2 bg-primaryOrange text-white rounded-xl hover:brightness-90 transition">
+        <button
+          @click="clearFilter"
+          class="px-4 py-2 bg-primaryOrange text-white rounded-xl hover:brightness-90 transition"
+        >
           Submit A Talk
         </button>
-        <button @click="clearFilter" class="px-4 py-2 border border-primaryOrange text-primaryOrange rounded-xl hover:bg-secondaryOrange hover:bg-opacity-15 transition">
+        <button
+          @click="clearFilter"
+          class="px-4 py-2 border border-primaryOrange text-primaryOrange rounded-xl hover:bg-secondaryOrange hover:bg-opacity-15 transition"
+        >
           View Schedule
         </button>
-        <button @click="clearFilter" class="px-4 py-2 bg-primaryOrange text-white rounded-xl hover:brightness-90 transition">
+        <button
+          @click="clearFilter"
+          class="px-4 py-2 bg-primaryOrange text-white rounded-xl hover:brightness-90 transition"
+        >
           Clear It, Clear It Real Good!
         </button>
       </div>
@@ -161,22 +176,29 @@ async function testTagGeneration() {
           <TalkCard v-for="talk in filteredTalks" :key="talk.id" :talk="talk" />
         </div>
         <div v-else>
-          <div v-for="section in groupedTalkSections" :key="`${section.year}-${section.monthIndex}`">
-            <div :id="`anchor-${section.year}-${section.monthName}`" class="pt-20 -mt-20"></div>
+          <TableOfContents :sections="groupedTalkSections" />
+          <div
+            v-for="section in groupedTalkSections"
+            :key="`${section.year}-${section.monthIndex}`"
+          >
+            <div
+              :id="`anchor-${section.year}-${section.monthName}`"
+              class="pt-20 -mt-20"
+            ></div>
             <div class="flex items-start mt-12 mb-4">
               <h2 class="text-2xl font-bold mr-4">
                 {{ `${section.year} ${section.monthName}` }}
               </h2>
               <a
-                  :href="getRecordingLink(section.year, section.monthName)"
-                  target="_blank"
-                  class="hover-lift w-8 h-8 rounded-xl bg-red-400 flex items-center justify-center hover:bg-red-700"
+                :href="getRecordingLink(section.year, section.monthName)"
+                target="_blank"
+                class="hover-lift w-8 h-8 rounded-xl bg-red-400 flex items-center justify-center hover:bg-red-700"
               >
                 <svg
-                    xmlns="http://www.w3.org/2000/svg"
-                    class="w-4 h-4"
-                    viewBox="0 0 24 24"
-                    fill="white"
+                  xmlns="http://www.w3.org/2000/svg"
+                  class="w-4 h-4"
+                  viewBox="0 0 24 24"
+                  fill="white"
                 >
                   <path d="M8 5v14l11-7z" />
                 </svg>
@@ -184,9 +206,9 @@ async function testTagGeneration() {
             </div>
             <div class="grid gap-4">
               <TalkCard
-                  v-for="talk in section.talks"
-                  :key="talk.id"
-                  :talk="talk"
+                v-for="talk in section.talks"
+                :key="talk.id"
+                :talk="talk"
               />
             </div>
           </div>
