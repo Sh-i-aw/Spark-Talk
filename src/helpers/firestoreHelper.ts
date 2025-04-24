@@ -62,3 +62,13 @@ export async function getTags() {
 
     return allTags.docs.map((tag) => tag.id);
 }
+
+export async function getVideoLinks() {
+    const tagsCollection = collection(newDb, "video-links");
+    const snapshot = await getDocs(tagsCollection);
+
+    return snapshot.docs.map((doc) => ({
+        id: doc.id,
+        ...doc.data(),
+    }));
+}

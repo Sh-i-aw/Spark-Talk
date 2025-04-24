@@ -4,6 +4,7 @@ import { generateTagsWithOllama } from "@/helpers/OllamaHelper.js";
 import {
   getTalks,
   getTags,
+  getVideoLinks,
   insertTagsForPastTalk,
   insertNewTagIfNeeded,
 } from "@/helpers/firestoreHelper.js";
@@ -12,11 +13,13 @@ import TableOfContents from "@/components/TableOfContents.vue";
 
 const talks = ref(null);
 const tags = ref([]);
+const videoLinks = ref([])
 const filter = ref([]);
 
 onMounted(async () => {
   talks.value = await getTalks();
   tags.value = await getTags();
+  videoLinks.value = await getVideoLinks();
 });
 
 function clearFilter() {
@@ -28,9 +31,9 @@ function insertFilter(tag) {
 }
 
 function getRecordingLink(year, month) {
-  // You can replace this with your actual link logic
-  const formattedMonth = month.toLowerCase(); // like 'feb'
-  return `https://example.com/recordings/${year}/${formattedMonth}`;
+  const recordingLink = videoLinks.value.find((linkRecord) => linkRecord.id === `${month} ${year}`)
+  if (!recordingLink) return ""
+  return recordingLink.link;
 }
 
 const filteredTalks = computed(() => {
@@ -118,13 +121,13 @@ async function testTagGeneration() {
     <div class="w-1/4 p-6 fixed left-0 top-0 h-full flex flex-col gap-6">
       <div class="flex flex-col items-center">
         <h1 class="text-3xl font-bold">Vehikl Lightning Talks ⚡</h1>
-        <div class="flex justify-evenly items-center">
+        <div class="flex flex-wrap justify-evenly items-center">
           <img
             src="./assets/lego-2.png"
             alt=""
             class="max-w-xs w-full h-auto"
           />
-          <h2 class="text-xl">
+          <h2 class="text-xl flex-1">
             At tech talks, the Vehikl community comes together to discuss new
             technologies, encounters, and ideas that they came across the past
             month.
@@ -184,26 +187,28 @@ async function testTagGeneration() {
             <div
               :id="`anchor-${section.year}-${section.monthName}`"
               class="pt-20 -mt-20"
-            ></div>
-            <div class="flex items-start mt-12 mb-4">
-              <h2 class="text-2xl font-bold mr-4">
-                {{ `${section.year} ${section.monthName}` }}
-              </h2>
-              <a
-                :href="getRecordingLink(section.year, section.monthName)"
-                target="_blank"
-                class="hover-lift w-8 h-8 rounded-xl bg-red-400 flex items-center justify-center hover:bg-red-700"
-              >
-                <svg
-                  xmlns="http://www.w3.org/2000/svg"
-                  class="w-4 h-4"
-                  viewBox="0 0 24 24"
-                  fill="white"
+            >
+              <div class="flex items-start mt-12 mb-4">
+                <h2 class="text-2xl font-bold mr-4">
+                  {{ `${section.year} ${section.monthName}` }}
+                </h2>
+                <a
+                    :href="getRecordingLink(section.year, section.monthName)"
+                    target="_blank"
+                    class="hover-lift w-8 h-8 rounded-xl bg-red-400 flex items-center justify-center hover:bg-red-700"
                 >
-                  <path d="M8 5v14l11-7z" />
-                </svg>
-              </a>
+                  <svg
+                      xmlns="http://www.w3.org/2000/svg"
+                      class="w-4 h-4"
+                      viewBox="0 0 24 24"
+                      fill="white"
+                  >
+                    <path d="M8 5v14l11-7z" />
+                  </svg>
+                </a>
+              </div>
             </div>
+
             <div class="grid gap-4">
               <TalkCard
                 v-for="talk in section.talks"
