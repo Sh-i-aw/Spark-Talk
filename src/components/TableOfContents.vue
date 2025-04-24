@@ -81,7 +81,7 @@ function getLatestMonth(year) {
         </button>
         <div class="pl-4 space-y-1">
           <button
-            v-for="(section, monthIndex) in entry.sections"
+            v-for="section in entry.sections"
             :key="`${section.year}-${section.monthIndex}`"
             @click="scrollToSection(section.year, section.monthName)"
             class="text-sm hover:text-primaryOrange transition-colors block flex items-center gap-2"

@@ -10,10 +10,11 @@ import {
 } from "@/helpers/firestoreHelper.js";
 import TalkCard from "@/components/TalkCard.vue";
 import TableOfContents from "@/components/TableOfContents.vue";
+import TalkAppHeader from "@/components/TalkAppHeader.vue";
 
 const talks = ref(null);
 const tags = ref([]);
-const videoLinks = ref([])
+const videoLinks = ref([]);
 const filter = ref([]);
 
 onMounted(async () => {
@@ -31,8 +32,10 @@ function insertFilter(tag) {
 }
 
 function getRecordingLink(year, month) {
-  const recordingLink = videoLinks.value.find((linkRecord) => linkRecord.id === `${month} ${year}`)
-  if (!recordingLink) return ""
+  const recordingLink = videoLinks.value.find(
+    (linkRecord) => linkRecord.id === `${month} ${year}`
+  );
+  if (!recordingLink) return "";
   return recordingLink.link;
 }
 
@@ -77,6 +80,15 @@ const groupedTalkSections = computed(() => {
   });
 });
 
+function scrollToCurrentMonth() {
+  const now = new Date();
+  console.log(`anchor-${now.getFullYear()}-${now.toLocaleString("default", { month: "short" })}`)
+  const element = document.getElementById(`anchor-${now.getFullYear()}-${now.toLocaleString("default", { month: "short" })}`);
+  if (element) {
+    element.scrollIntoView({ behavior: "smooth" });
+  }
+}
+
 async function testTagGeneration() {
   await Promise.all(
     talks.value.map(async (talk) => {
@@ -119,22 +131,7 @@ async function testTagGeneration() {
   <div class="flex h-screen">
     <!-- Left Sidebar -->
     <div class="w-1/4 p-8 fixed left-0 top-0 h-full flex flex-col gap-6">
-      <div class="flex flex-col items-center">
-        <h1 class="text-3xl font-bold">Vehikl Lightning Talks ⚡</h1>
-        <div class="flex flex-wrap justify-evenly items-center">
-          <img
-            src="./assets/lego-2.png"
-            alt=""
-            class="max-w-xs w-full h-auto"
-          />
-          <h2 class="text-xl flex-1">
-            At tech talks, the Vehikl community comes together to discuss new
-            technologies, encounters, and ideas that they came across the past
-            month.
-          </h2>
-        </div>
-      </div>
-
+      <TalkAppHeader />
       <div class="flex flex-col gap-2">
         <button
           @click="clearFilter"
@@ -143,17 +140,30 @@ async function testTagGeneration() {
           Submit A Talk
         </button>
         <button
-          @click="clearFilter"
+          @click="scrollToCurrentMonth"
           class="px-4 py-2 border border-primaryOrange text-primaryOrange rounded-xl hover:bg-secondaryOrange hover:bg-opacity-15 transition"
         >
           View Schedule
         </button>
-        <button
-          @click="clearFilter"
-          class="px-4 py-2 bg-primaryOrange text-white rounded-xl hover:brightness-90 transition"
-        >
-          Clear It, Clear It Real Good!
-        </button>
+
+        <!-- Selected Tags Display -->
+        <div v-if="filter.length > 0" class="flex flex-col gap-2 mt-2">
+          <button
+              @click="clearFilter"
+              class="px-4 py-2 bg-primaryOrange text-white rounded-xl hover:brightness-90 transition"
+          >
+            Clear It, Clear It Real Good!
+          </button>
+          <div class="flex flex-wrap gap-2 mt-2">
+            <span
+              v-for="selectedTag in filter"
+              :key="selectedTag"
+              class="px-3 py-1 bg-primaryOrange text-white font-bold text-sm rounded-full"
+            >
+              {{ selectedTag }}
+            </span>
+          </div>
+        </div>
       </div>
 
       <!-- Tags Section -->
@@ -161,7 +171,7 @@ async function testTagGeneration() {
         <h2 class="text-xl font-semibold text-white mb-4">Tags</h2>
         <div class="flex flex-wrap gap-2">
           <span
-            v-for="tag in tags"
+            v-for="tag in tags.filter((t) => !filter.includes(t))"
             :key="tag"
             @click="insertFilter(tag)"
             class="px-3 py-1 bg-yellow-500 bg-opacity-60 text-white font-bold text-sm rounded-full hover:bg-primaryOrange"
@@ -193,15 +203,15 @@ async function testTagGeneration() {
                   {{ `${section.year} ${section.monthName}` }}
                 </h2>
                 <a
-                    :href="getRecordingLink(section.year, section.monthName)"
-                    target="_blank"
-                    class="hover-lift w-8 h-8 rounded-xl bg-red-400 flex items-center justify-center hover:bg-red-700"
+                  :href="getRecordingLink(section.year, section.monthName)"
+                  target="_blank"
+                  class="hover-lift w-8 h-8 rounded-xl bg-red-400 flex items-center justify-center hover:bg-red-700"
                 >
                   <svg
-                      xmlns="http://www.w3.org/2000/svg"
-                      class="w-4 h-4"
-                      viewBox="0 0 24 24"
-                      fill="white"
+                    xmlns="http://www.w3.org/2000/svg"
+                    class="w-4 h-4"
+                    viewBox="0 0 24 24"
+                    fill="white"
                   >
                     <path d="M8 5v14l11-7z" />
                   </svg>
