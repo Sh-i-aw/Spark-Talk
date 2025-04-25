@@ -11,6 +11,8 @@ import {
 import TalkCard from "@/components/TalkCard.vue";
 import TableOfContents from "@/components/TableOfContents.vue";
 import TalkAppHeader from "@/components/TalkAppHeader.vue";
+import FilledButton from "@/components/buttons/filledButton.vue";
+import OutlinedButton from "@/components/buttons/outlinedButton.vue";
 
 const talks = ref(null);
 const tags = ref([]);
@@ -35,7 +37,7 @@ function getRecordingLink(year, month) {
   const recordingLink = videoLinks.value.find(
     (linkRecord) => linkRecord.id === `${month} ${year}`
   );
-  if (!recordingLink) return "";
+  if (!recordingLink) return "https://youtu.be/XqZsoesa55w?t=25";
   return recordingLink.link;
 }
 
@@ -104,9 +106,6 @@ async function testTagGeneration() {
         }
 
         await insertTagsForPastTalk(talk, resultTags);
-        console.log(
-          `Inserted tags ${resultTags} into ${talk.title} by ${talk.name}`
-        );
 
         await Promise.all(
           resultTags.map(async (tag) => {
@@ -133,27 +132,12 @@ async function testTagGeneration() {
     <div class="w-1/4 p-8 fixed left-0 top-0 h-full flex flex-col gap-6">
       <TalkAppHeader />
       <div class="flex flex-col gap-2">
-        <button
-          @click="clearFilter"
-          class="px-4 py-2 bg-primaryOrange text-white rounded-xl hover:brightness-90 transition"
-        >
-          Submit A Talk
-        </button>
-        <button
-          @click="scrollToCurrentMonth"
-          class="px-4 py-2 border border-primaryOrange text-primaryOrange rounded-xl hover:bg-secondaryOrange hover:bg-opacity-15 transition"
-        >
-          View Schedule
-        </button>
+        <FilledButton @click="clearFilter">Submit A Talk</FilledButton>
+        <OutlinedButton @click="scrollToCurrentMonth">View Schedule</OutlinedButton>
 
         <!-- Selected Tags Display -->
         <div v-if="filter.length > 0" class="flex flex-col gap-2 mt-2">
-          <button
-              @click="clearFilter"
-              class="px-4 py-2 bg-primaryOrange text-white rounded-xl hover:brightness-90 transition"
-          >
-            Clear It, Clear It Real Good!
-          </button>
+          <FilledButton @click="clearFilter">Clear It, Clear It Real Good!</FilledButton>
           <div class="flex flex-wrap gap-2 mt-2">
             <span
               v-for="selectedTag in filter"
@@ -166,7 +150,7 @@ async function testTagGeneration() {
         </div>
       </div>
 
-      <!-- Tags Section -->
+      <!-- Unselected Tags Display -->
       <div class="mt-6">
         <h2 class="text-xl font-semibold text-white mb-4">Tags</h2>
         <div class="flex flex-wrap gap-2">
@@ -205,16 +189,10 @@ async function testTagGeneration() {
                 <a
                   :href="getRecordingLink(section.year, section.monthName)"
                   target="_blank"
+                  rel="noopener noreferrer"
                   class="hover-lift w-8 h-8 rounded-xl bg-red-400 flex items-center justify-center hover:bg-red-700"
                 >
-                  <svg
-                    xmlns="http://www.w3.org/2000/svg"
-                    class="w-4 h-4"
-                    viewBox="0 0 24 24"
-                    fill="white"
-                  >
-                    <path d="M8 5v14l11-7z" />
-                  </svg>
+                  <svg xmlns="http://www.w3.org/2000/svg" class="w-4 h-4" viewBox="0 0 24 24" fill="white"><path d="M8 5v14l11-7z" /></svg>
                 </a>
               </div>
             </div>
