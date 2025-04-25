@@ -155,8 +155,7 @@ async function testTagGeneration() {
       </div>
 
       <!-- Unselected Tags Display -->
-      <div class="mt-6">
-        <h2 class="text-xl font-semibold text-white mb-4">Tags</h2>
+      <div class="mt-6 flex-1 overflow-y-auto custom-scrollbar">
         <div class="flex flex-wrap gap-2">
           <span
             v-for="tag in tags.filter((t) => !filter.includes(t))"
@@ -174,7 +173,12 @@ async function testTagGeneration() {
     <div class="w-3/4 ml-[25%] p-2 overflow-y-auto">
       <div class="w-full px-12 pt-0 pr-24 mx-auto">
         <div v-if="filter.length > 0" class="grid gap-4">
-          <TalkCard v-for="talk in filteredTalks" :key="talk.id" :talk="talk" @tag-click="insertFilter"/>
+          <TalkCard
+            v-for="talk in filteredTalks"
+            :key="talk.id"
+            :talk="talk"
+            @tag-click="insertFilter"
+          />
         </div>
         <div v-else>
           <TableOfContents :sections="groupedTalkSections" />
@@ -214,3 +218,11 @@ async function testTagGeneration() {
     </div>
   </div>
 </template>
+
+<style>
+.custom-scrollbar {
+  scrollbar-width: thin;
+  scrollbar-color: #eeeeee transparent;
+}
+
+</style>
