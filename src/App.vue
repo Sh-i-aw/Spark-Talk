@@ -33,6 +33,10 @@ function insertFilter(tag) {
   filter.value.push(tag);
 }
 
+function removeFilter(tagToRemove) {
+  filter.value = filter.value.filter((tag) => tag !== tagToRemove);
+}
+
 function getRecordingLink(year, month) {
   const recordingLink = videoLinks.value.find(
     (linkRecord) => linkRecord.id === `${month} ${year}`
@@ -84,8 +88,7 @@ const groupedTalkSections = computed(() => {
 
 function scrollToCurrentMonth() {
   const now = new Date();
-  console.log(`anchor-${now.getFullYear()}-${now.toLocaleString("default", { month: "short" })}`)
-  const element = document.getElementById(`anchor-${now.getFullYear()}-${now.toLocaleString("default", { month: "short" })}`);
+  const element = document.getElementById(`anchor-${now.getFullYear()}-${now.toLocaleString("default", {month: "short",})}`);
   if (element) {
     element.scrollIntoView({ behavior: "smooth" });
   }
@@ -142,7 +145,8 @@ async function testTagGeneration() {
             <span
               v-for="selectedTag in filter"
               :key="selectedTag"
-              class="px-3 py-1 bg-primaryOrange text-white font-bold text-sm rounded-full"
+              @click="removeFilter(selectedTag)"
+              class="px-3 py-1 bg-primaryOrange bg-opacity-75 text-white font-bold text-sm rounded-full hover:bg-primaryOrange"
             >
               {{ selectedTag }}
             </span>
@@ -158,7 +162,7 @@ async function testTagGeneration() {
             v-for="tag in tags.filter((t) => !filter.includes(t))"
             :key="tag"
             @click="insertFilter(tag)"
-            class="px-3 py-1 bg-yellow-500 bg-opacity-60 text-white font-bold text-sm rounded-full hover:bg-primaryOrange"
+            class="px-3 py-1 bg-yellow-500 bg-opacity-60 text-white font-semibold text-sm rounded-full hover:bg-primaryOrange"
           >
             {{ tag }}
           </span>
@@ -170,7 +174,7 @@ async function testTagGeneration() {
     <div class="w-3/4 ml-[25%] p-2 overflow-y-auto">
       <div class="w-full px-12 pt-0 pr-24 mx-auto">
         <div v-if="filter.length > 0" class="grid gap-4">
-          <TalkCard v-for="talk in filteredTalks" :key="talk.id" :talk="talk" />
+          <TalkCard v-for="talk in filteredTalks" :key="talk.id" :talk="talk" @tag-click="insertFilter"/>
         </div>
         <div v-else>
           <TableOfContents :sections="groupedTalkSections" />
@@ -192,8 +196,7 @@ async function testTagGeneration() {
                   rel="noopener noreferrer"
                   class="hover-lift w-8 h-8 rounded-xl bg-red-400 flex items-center justify-center hover:bg-red-700"
                 >
-                  <svg xmlns="http://www.w3.org/2000/svg" class="w-4 h-4" viewBox="0 0 24 24" fill="white"><path d="M8 5v14l11-7z" /></svg>
-                </a>
+                  <svg xmlns="http://www.w3.org/2000/svg" class="w-4 h-4" viewBox="0 0 24 24" fill="white"><path d="M8 5v14l11-7z" /></svg></a>
               </div>
             </div>
 
@@ -202,6 +205,7 @@ async function testTagGeneration() {
                 v-for="talk in section.talks"
                 :key="talk.id"
                 :talk="talk"
+                @tag-click="insertFilter"
               />
             </div>
           </div>

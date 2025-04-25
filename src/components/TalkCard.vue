@@ -1,10 +1,14 @@
-<script setup>
+<script setup lang="ts">
 defineProps({
   talk: {
     type: Object,
     required: true,
   },
 });
+
+defineEmits<{
+  tagClick: [tag:string]
+}>()
 </script>
 
 <template>
@@ -21,7 +25,8 @@ defineProps({
           <div
             v-for="tag in talk.tags"
             :key="tag"
-            class="px-3 py-1 bg-primaryOrange bg-opacity-60 text-white text-sm rounded-full hover:bg-primaryOrange transition"
+            @click="$emit('tagClick', tag)"
+            class="px-3 py-1 max-h-7 bg-primaryOrange bg-opacity-60 text-white text-sm rounded-full hover:bg-primaryOrange transition"
           >
             {{ tag }}
           </div>
